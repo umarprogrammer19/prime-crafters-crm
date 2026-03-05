@@ -1,8 +1,23 @@
 'use client';
 
-import { Users, Briefcase, Building2, TrendingUp } from 'lucide-react';
+import { Users, Briefcase, Building2, TrendingUp, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function DashboardOverview() {
+    const [stats, setStats] = useState({ total: 0, internal: 0, client: 0, closed: 0 });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch('/api/dashboard/stats')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) setStats(data.stats);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) return <div className="flex justify-center p-20"><Loader2 className="w-8 h-8 animate-spin text-blue-600" /></div>;
+
     return (
         <div className="max-w-6xl mx-auto">
             <div className="mb-8">
@@ -10,22 +25,24 @@ export default function DashboardOverview() {
                 <p className="text-gray-500 mt-1">Here is a summary of your lead pipeline today.</p>
             </div>
 
-            {/* Placeholder Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard title="Total Leads" value="124" icon={Users} trend="+12%" />
-                <StatCard title="Internal Leads" value="86" icon={Briefcase} trend="+5%" />
-                <StatCard title="Client Leads" value="38" icon={Building2} trend="+18%" />
-                <StatCard title="Closed Won" value="12" icon={TrendingUp} trend="+2%" />
+                <StatCard title="Total Leads" value={stats.total} icon={Users} trend="Live" />
+                <StatCard title="Internal Leads" value={stats.internal} icon={Briefcase} trend="Live" />
+                <StatCard title="Client Leads" value={stats.client} icon={Building2} trend="Live" />
+                <StatCard title="Closed Won" value={stats.closed} icon={TrendingUp} trend="Live" />
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 h-96 flex items-center justify-center text-gray-500">
-                <p>Activity charts and recent leads will appear here.</p>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 h-96 flex flex-col items-center justify-center text-gray-500">
+                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                    <TrendingUp className="w-8 h-8 text-gray-300" />
+                </div>
+                <p className="font-medium text-gray-900">Your CRM is fully operational!</p>
+                <p className="text-sm mt-1">Add more leads to start seeing activity trends.</p>
             </div>
         </div>
     );
 }
 
-// Simple internal component for the cards
 function StatCard({ title, value, icon: Icon, trend }) {
     return (
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
@@ -33,7 +50,7 @@ function StatCard({ title, value, icon: Icon, trend }) {
                 <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
                     <Icon className="w-6 h-6 text-blue-600" />
                 </div>
-                <span className="text-sm font-medium text-green-600 bg-green-50 px-2.5 py-1 rounded-full">
+                <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full uppercase tracking-wider">
                     {trend}
                 </span>
             </div>
