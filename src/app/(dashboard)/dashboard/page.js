@@ -1,13 +1,18 @@
 'use client';
 
-import { Users, Briefcase, Building2, TrendingUp, Loader2 } from 'lucide-react';
+import { Users, Briefcase, Building2, TrendingUp, Loader2, Download } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function DashboardOverview() {
     const [stats, setStats] = useState({ total: 0, internal: 0, client: 0, closed: 0 });
     const [loading, setLoading] = useState(true);
+    const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
+        fetch('/api/auth/me').then(r => r.json()).then(d => {
+            if (d.user) setUserRole(d.user.role);
+        });
+
         fetch('/api/dashboard/stats')
             .then(res => res.json())
             .then(data => {
@@ -16,13 +21,31 @@ export default function DashboardOverview() {
             });
     }, []);
 
+    const handleDownloadCSV = () => {
+        // Navigating to the API route automatically triggers the browser file download
+        window.location.href = '/api/reports/csv';
+    };
+
     if (loading) return <div className="flex justify-center p-20"><Loader2 className="w-8 h-8 animate-spin text-blue-600" /></div>;
 
     return (
         <div className="max-w-6xl mx-auto">
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900">Overview</h1>
-                <p className="text-gray-500 mt-1">Here is a summary of your lead pipeline today.</p>
+            <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Overview</h1>
+                    <p className="text-gray-500 mt-1">Here is a summary of your lead pipeline today.</p>
+                </div>
+
+                {/* NEW: Download Report Button for Admins */}
+                {userRole === 'admin' && (
+                    <button
+                        onClick={handleDownloadCSV}
+                        className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-5 py-2.5 rounded-xl font-medium transition-all shadow-sm"
+                    >
+                        <Download className="w-4 h-4 text-blue-600" />
+                        Export CSV Report
+                    </button>
+                )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
