@@ -12,11 +12,12 @@ async function getUser() {
 }
 
 // GET: Fetch a single lead and its activity history
-export async function GET(req, { params }) {
+export async function GET(req, context) {
+    // NEXT.JS 15 FIX: Await the params
+    const { id: leadId } = await context.params;
+
     const user = await getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const leadId = params.id;
 
     try {
         // 1. Fetch Lead Info
@@ -59,11 +60,13 @@ export async function GET(req, { params }) {
 }
 
 // PATCH: Update Lead (Status, Assignee) or Add Note
-export async function PATCH(req, { params }) {
+export async function PATCH(req, context) {
+    // NEXT.JS 15 FIX: Await the params
+    const { id: leadId } = await context.params;
+
     const user = await getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const leadId = params.id;
     const { action_type, status, assigned_to, note } = await req.json();
 
     try {
@@ -93,7 +96,6 @@ export async function PATCH(req, { params }) {
                 `INSERT INTO lead_activities (lead_id, user_id, action_type, note) VALUES ($1, $2, 'note_added', $3)`,
                 [leadId, user.id, note]
             );
-            // Touch the updated_at timestamp on the lead
             await query(`UPDATE leads SET updated_at = NOW() WHERE id = $1`, [leadId]);
         }
 

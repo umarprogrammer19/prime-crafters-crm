@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, Loader2 } from 'lucide-react';
 import AddLeadModal from '@/app/components/AddLeadModal';
+import { useRouter } from 'next/navigation';
 
 export default function InternalLeadsPage() {
     const [leads, setLeads] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [userRole, setUserRole] = useState(null);
+    const router = useRouter();
 
     useEffect(() => {
         // Check user role for showing the "Add Lead" button
@@ -94,7 +96,11 @@ export default function InternalLeadsPage() {
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {leads.map(lead => (
-                                    <tr key={lead.id} className="hover:bg-gray-50 transition-colors cursor-pointer">
+                                    <tr
+                                        key={lead.id}
+                                        onClick={() => router.push(`/dashboard/leads/${lead.id}`)}
+                                        className="hover:bg-gray-50 transition-colors cursor-pointer"
+                                    >
                                         <td className="px-6 py-4">
                                             <p className="font-semibold text-gray-900">{lead.name}</p>
                                             <p className="text-gray-500">{lead.company || lead.email}</p>

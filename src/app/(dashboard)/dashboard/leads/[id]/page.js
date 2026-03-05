@@ -193,7 +193,7 @@ export default function LeadDetailsPage({ params }) {
                         </form>
 
                         {/* Timeline Feed */}
-                        <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
+                        <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-linear-to-b before:from-transparent before:via-gray-200 before:to-transparent">
                             {activities.length === 0 ? (
                                 <p className="text-center text-gray-500 py-4 text-sm">No activity recorded yet.</p>
                             ) : (
