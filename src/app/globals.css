@@ -28,3 +28,10 @@ body {
 input {
   color: #0a0a0a;
 }
+
+button,
+select,
+option,
+input {
+  cursor: pointer !important;
+}
