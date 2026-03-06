@@ -1,7 +1,3 @@
-import OpenAI from 'openai';
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 export async function analyzeScrapedLead(text, platform) {
     if (!text || text.length < 15) return { intent: "irrelevant", score: "low" };
 
@@ -29,14 +25,28 @@ export async function analyzeScrapedLead(text, platform) {
   `;
 
     try {
-        const completion = await openai.chat.completions.create({
-            model: "gpt-4-turbo",
-            messages: [{ role: "user", content: prompt }],
-            response_format: { type: "json_object" },
-            temperature: 0.1
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "gpt-4-turbo",
+                messages: [{ role: "user", content: prompt }],
+                response_format: { type: "json_object" },
+                temperature: 0.1
+            })
         });
 
-        return JSON.parse(completion.choices[0].message.content);
+        const data = await response.json();
+
+        if (data.error) {
+            console.error("OpenAI API Error:", data.error.message);
+            return { intent: "irrelevant", score: "low" };
+        }
+
+        return JSON.parse(data.choices[0].message.content);
     } catch (e) {
         console.error("AI Error:", e.message);
         return { intent: "irrelevant", score: "low" };
