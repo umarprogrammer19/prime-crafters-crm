@@ -23,6 +23,7 @@ export default function Sidebar({ user }) {
         { name: 'Team Approvals', href: '/admin/approvals', icon: ShieldCheck, roles: ['admin'] },
         { name: 'All Users', href: '/admin/users', icon: Users, roles: ['admin'] },
         { name: 'System Logs', href: '/admin/logs', icon: Activity, roles: ['admin'] },
+        { name: 'Scraper Hub', href: '/admin/scraper', icon: Database, roles: ['admin'] },
     ];
 
     const filteredNav = navItems.filter(item => item.roles.includes(user?.role));
