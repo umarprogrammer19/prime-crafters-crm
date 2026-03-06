@@ -2,25 +2,28 @@ export async function analyzeScrapedLead(text, platform) {
     if (!text || text.length < 15) return { intent: "irrelevant", score: "low" };
 
     const prompt = `
-    You are an EXTREMELY STRICT Lead Qualification AI for '3vltn Business' (A Premium Domain Name Marketplace).
-    We ONLY want HOT LEADS. Do not pass junk.
+    You are a Lead Qualification AI for '3vltn Business' (A Premium Domain Name Marketplace).
+    Categorize the following social media post.
 
     Platform: ${platform}
     Post: "${text.substring(0, 1000)}" 
 
-    RULES (BE RUTHLESS):
-    - "buyer": User EXPLICITLY states they have budget and want to buy/acquire a domain NOW.
-    - "seller": User EXPLICITLY states they own a high-value domain and want to sell it NOW.
-    - "irrelevant": IF THEY MENTION web hosting, coding, SEO, active directory domains, or just asking general questions WITHOUT intent to transact, mark it irrelevant.
+    INTENT RULES:
+    - "buyer": Looking to acquire a domain, asking for naming ideas, or looking for marketplaces.
+    - "seller": Trying to sell, auction, or get an appraisal for a domain they own.
+    - "irrelevant": General tech chat, web hosting issues, active directory, coding. Mark as irrelevant.
 
-    We only want HOT leads. If it is a "maybe", mark it irrelevant.
+    SCORING RULES (Only apply if intent is buyer/seller):
+    - "high": Ready to transact NOW. Explicitly mentions buying/selling a specific asset or has a budget.
+    - "medium": Exploring options. Asking for appraisals, looking for marketplace recommendations, or brainstorming startup names.
+    - "low": Very vague interest. Mentioning domains in passing but might be open to a pitch.
 
     Return JSON ONLY: 
     { 
         "intent": "buyer|seller|irrelevant", 
-        "score": "high|low", 
+        "score": "high|medium|low", 
         "email": "extracted_email_or_null",
-        "outreach": "A short, 2-sentence professional outreach message to close the deal." 
+        "outreach": "A short, 2-sentence professional outreach message based on their specific post." 
     }
   `;
 

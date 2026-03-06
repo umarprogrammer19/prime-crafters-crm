@@ -5,7 +5,11 @@ export async function scrapeReddit(limit = 10) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            searches: ["buying domain name", "selling premium domain", "need a domain for startup"],
+            searches: [
+                "buying domain name", "selling premium domain", "need a domain for startup",
+                "appraise my domain", "where to buy domains", "startup naming ideas",
+                "domain marketplace", "domain portfolio"
+            ],
             sort: "new",
             maxItems: parseInt(limit),
         })
@@ -28,7 +32,10 @@ export async function scrapeTwitter(limit = 10) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            searchTerms: ["buying domain", "selling domain"],
+            searchTerms: [
+                "buying domain", "selling domain", "domain for sale",
+                "looking for a domain", "need a startup name", "domain auction", "domain appraisal"
+            ],
             maxItems: parseInt(limit),
             sort: "Latest",
         })
