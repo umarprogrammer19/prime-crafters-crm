@@ -1,6 +1,7 @@
+// src/app/api/scraper/run/route.js
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import { scrapeReddit, scrapeTwitter } from '@/lib/apify';
+import { scrapeReddit, scrapeTwitter, scrapeFacebook } from '@/lib/apify'; // <--- Import Facebook
 import { analyzeScrapedLead } from '@/lib/openai';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -15,13 +16,14 @@ export async function POST(req) {
         const user = jwt.verify(token, process.env.JWT_SECRET);
         if (user.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-        // 2. Parse Request
-        const { platform, limit } = await req.json();
+        // 2. Parse Request (Added 'url' for Facebook)
+        const { platform, limit, url } = await req.json();
         let rawItems = [];
 
         // 3. Run Scraper
         if (platform === 'reddit') rawItems = await scrapeReddit(limit);
         else if (platform === 'twitter') rawItems = await scrapeTwitter(limit);
+        else if (platform === 'facebook') rawItems = await scrapeFacebook(limit, url);
         else return NextResponse.json({ error: 'Invalid platform' }, { status: 400 });
 
         let savedCount = 0;
