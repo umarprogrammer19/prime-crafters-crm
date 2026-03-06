@@ -6,7 +6,8 @@ import {
     LayoutDashboard,
     ShieldCheck,
     Users,
-    Activity
+    Activity,
+    Database
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
