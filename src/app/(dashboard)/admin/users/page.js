@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Users, ShieldAlert, Loader2, CheckCircle2 } from 'lucide-react';
+import { Users, ShieldAlert, Loader2, CheckCircle2, Plus } from 'lucide-react';
+import AddUserModal from '@/app/components/AddUserModal'; // <--- NEW IMPORT
 
 export default function AdminUsersPage() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false); // <--- MODAL STATE
 
     useEffect(() => {
         fetchUsers();
@@ -35,7 +37,6 @@ export default function AdminUsersPage() {
             const data = await res.json();
 
             if (data.success) {
-                // Update UI locally
                 setUsers(users.map(u =>
                     u.id === userId ? { ...u, role: newRole || u.role, status: newStatus || u.status } : u
                 ));
@@ -52,13 +53,26 @@ export default function AdminUsersPage() {
     if (loading) return <div className="flex h-64 items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-blue-600" /></div>;
 
     return (
-        <div className="p-8 max-w-6xl mx-auto">
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                    <Users className="w-7 h-7 text-blue-600" />
-                    Team Management
-                </h1>
-                <p className="text-gray-500 mt-1">Manage existing users, change roles, or revoke access.</p>
+        <div className="p-8 max-w-6xl mx-auto space-y-6">
+
+            {/* Header with Add Button */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <Users className="w-7 h-7 text-blue-600" />
+                        Team Management
+                    </h1>
+                    <p className="text-gray-500 mt-1">Manage existing users, change roles, or revoke access.</p>
+                </div>
+
+                {/* NEW ADD BUTTON */}
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-md"
+                >
+                    <Plus className="w-5 h-5" />
+                    Add User
+                </button>
             </div>
 
             <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
@@ -79,13 +93,12 @@ export default function AdminUsersPage() {
                                     <p className="text-gray-500 text-xs">{user.email}</p>
                                 </td>
 
-                                {/* Role Dropdown */}
                                 <td className="px-6 py-4">
                                     <select
                                         value={user.role}
                                         onChange={(e) => handleUpdateUser(user.id, e.target.value, null)}
                                         disabled={actionLoading === user.id}
-                                        className="bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 outline-none capitalize"
+                                        className="bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-blue-500 block w-full p-2 outline-none capitalize"
                                     >
                                         <option value="sales">Sales</option>
                                         <option value="marketing">Marketing</option>
@@ -93,7 +106,6 @@ export default function AdminUsersPage() {
                                     </select>
                                 </td>
 
-                                {/* Status Badge */}
                                 <td className="px-6 py-4">
                                     <span className={`px-2.5 py-1 rounded-full text-xs font-semibold flex items-center w-max gap-1 ${user.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                                         }`}>
@@ -102,7 +114,6 @@ export default function AdminUsersPage() {
                                     </span>
                                 </td>
 
-                                {/* Quick Actions */}
                                 <td className="px-6 py-4 text-right">
                                     {user.status === 'approved' ? (
                                         <button
@@ -127,6 +138,13 @@ export default function AdminUsersPage() {
                     </tbody>
                 </table>
             </div>
+
+            {/* NEW MODAL INJECTION */}
+            <AddUserModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onUserAdded={(newUser) => setUsers([newUser, ...users])} // Instantly updates the table
+            />
         </div>
     );
 }
