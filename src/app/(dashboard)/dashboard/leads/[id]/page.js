@@ -3,7 +3,8 @@
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-    ArrowLeft, Building2, Mail, Phone, Clock, User, MessageSquare, Loader2, CheckCircle2
+    ArrowLeft, Building2, Mail, Phone, Clock, User, MessageSquare, Loader2, CheckCircle2,
+    ExternalLink
 } from 'lucide-react';
 import Link from 'next/link';
 
