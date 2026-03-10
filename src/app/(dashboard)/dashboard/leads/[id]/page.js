@@ -113,28 +113,6 @@ export default function LeadDetailsPage({ params }) {
                                     <Building2 className="w-4 h-4 mr-3 text-gray-400" /> {lead.company}
                                 </div>
                             )}
-                            {lead.content && (
-                                <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 shadow-sm relative group">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <h3 className="text-xs font-bold text-blue-600 uppercase tracking-wider">
-                                            Original Post Context
-                                        </h3>
-                                        {lead.url && (
-                                            <a
-                                                href={lead.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-600 bg-white border border-blue-200 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg flex items-center text-xs font-medium transition-all shadow-sm"
-                                            >
-                                                Open Link <ExternalLink className="w-3 h-3 ml-1.5" />
-                                            </a>
-                                        )}
-                                    </div>
-                                    <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed italic">
-                                        "{lead.content}"
-                                    </p>
-                                </div>
-                            )}
                             {lead.email && (
                                 <div className="flex items-center text-sm text-gray-600">
                                     <Mail className="w-4 h-4 mr-3 text-gray-400" />
@@ -151,7 +129,28 @@ export default function LeadDetailsPage({ params }) {
                             </div>
                         </div>
                     </div>
-
+                    {lead.content && (
+                        <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 shadow-sm relative group">
+                            <div className="flex justify-between items-start mb-3">
+                                <h3 className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                                    Original Post Context
+                                </h3>
+                                {lead.url && (
+                                    <a
+                                        href={lead.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 bg-white border border-blue-200 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg flex items-center text-xs font-medium transition-all shadow-sm"
+                                    >
+                                        Open Link <ExternalLink className="w-3 h-3 ml-1.5" />
+                                    </a>
+                                )}
+                            </div>
+                            <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed italic">
+                                "{lead.content}"
+                            </p>
+                        </div>
+                    )}
                     {/* Action Card (Status & Assignment) */}
                     <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-5">
                         <div>
