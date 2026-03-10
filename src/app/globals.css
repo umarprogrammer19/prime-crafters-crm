@@ -40,3 +40,7 @@ input {
 select {
   color: #364153;
 }
+
+::placeholder {
+  color: #0a0a0a !important;
+}
