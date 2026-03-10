@@ -1,15 +1,25 @@
-export async function scrapeReddit(limit = 10) {
+// Helper to get keywords based on business category
+const getSearchTerms = (category) => {
+    switch (category) {
+        case '3VLT':
+            return ["Selling domain", "Looking to buy domain", "Domain for sale", "Domain marketplace", "Buy premium domain"];
+        case 'Internal AI Agency':
+            return ["Looking for AI developer", "Need AI tool / AI SaaS", "Building AI startup", "Automation software help", "AI MVP developer needed"];
+        case 'Trenew':
+            return ["Roof replacement", "Need roofer / HVAC / AC repair", "Solar panel installer", "Roof leak repair", "HVAC replacement quote"];
+        default:
+            return ["buy", "sell"];
+    }
+};
+
+export async function scrapeReddit(limit = 10, category) {
     const url = `https://api.apify.com/v2/acts/trudax~reddit-scraper-lite/run-sync-get-dataset-items?token=${process.env.APIFY_API_TOKEN}`;
 
     const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            searches: [
-                "buying domain name", "selling premium domain", "need a domain for startup",
-                "appraise my domain", "where to buy domains", "startup naming ideas",
-                "domain marketplace", "domain portfolio"
-            ],
+            searches: getSearchTerms(category),
             sort: "new",
             maxItems: parseInt(limit),
         })
@@ -25,17 +35,14 @@ export async function scrapeReddit(limit = 10) {
     }));
 }
 
-export async function scrapeTwitter(limit = 10) {
+export async function scrapeTwitter(limit = 10, category) {
     const url = `https://api.apify.com/v2/acts/apidojo~tweet-scraper/run-sync-get-dataset-items?token=${process.env.APIFY_API_TOKEN}`;
 
     const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            searchTerms: [
-                "buying domain", "selling domain", "domain for sale",
-                "looking for a domain", "need a startup name", "domain auction", "domain appraisal"
-            ],
+            searchTerms: getSearchTerms(category),
             maxItems: parseInt(limit),
             sort: "Latest",
         })
@@ -51,15 +58,16 @@ export async function scrapeTwitter(limit = 10) {
     }));
 }
 
-export async function scrapeFacebook(limit = 10, url = null) {
-    const defaultUrls = [
-        "https://www.facebook.com/groups/3280541332233338",
-        "https://www.facebook.com/groups/domainbusiness",
-        "https://www.facebook.com/groups/bestwebhostingdomainflip",
-        "https://www.facebook.com/groups/domainnamegroup",
-        "https://www.facebook.com/groups/saasfounders"
-    ];
-    const targetUrl = url || defaultUrls[Math.floor(Math.random() * defaultUrls.length)];
+export async function scrapeFacebook(limit = 10, category, customUrl = null) {
+    // Default URLs based on category
+    const defaultUrls = {
+        '3VLT': ["https://www.facebook.com/groups/domainbusiness", "https://www.facebook.com/groups/bestwebhostingdomainflip"],
+        'Internal AI Agency': ["https://www.facebook.com/groups/saasfounders", "https://www.facebook.com/groups/artificialintelligenceforbusiness"],
+        'Trenew': ["https://www.facebook.com/groups/homeimprovement", "https://www.facebook.com/groups/hvacadvice"]
+    };
+
+    const urlsToUse = defaultUrls[category] || defaultUrls['3VLT'];
+    const targetUrl = customUrl || urlsToUse[Math.floor(Math.random() * urlsToUse.length)];
 
     const apiUrl = `https://api.apify.com/v2/acts/apify~facebook-groups-scraper/run-sync-get-dataset-items?token=${process.env.APIFY_API_TOKEN}`;
 
