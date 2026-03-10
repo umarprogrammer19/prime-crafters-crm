@@ -15,7 +15,7 @@ export async function POST(req) {
         const user = jwt.verify(token, process.env.JWT_SECRET);
         if (user.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-        const { platform, limit, url, category } = await req.json(); 
+        const { platform, limit, url, category } = await req.json();
         let rawItems = [];
 
         if (platform === 'reddit') rawItems = await scrapeReddit(limit, category);
@@ -75,24 +75,27 @@ export async function POST(req) {
             try {
                 const sourceStr = `Scraped (${lead.platform}) - ${lead.url}`;
 
-                // Insert into main leads table 
+                // Added ON CONFLICT (source) DO NOTHING
                 const newLead = await query(`
           INSERT INTO leads (name, email, source, type, category, status, assigned_to, created_by)
           VALUES ($1, $2, $3, $4, $5, 'New', $6, $7)
+          ON CONFLICT (source) DO NOTHING 
           RETURNING id
         `, [
                     lead.author_name, lead.email || null, sourceStr, dbType, dbCategory, assignedToId, user.id
                 ]);
 
-                // Add AI Draft as a note
-                if (lead.outreach) {
-                    await query(`
-            INSERT INTO lead_activities (lead_id, user_id, action_type, note)
-            VALUES ($1, $2, 'note_added', $3)
-          `, [newLead.rows[0].id, user.id, `AI Suggested Outreach:\n\n${lead.outreach}`]);
+                // Only add the activity note and increment counter IF a new lead was actually inserted
+                if (newLead.rowCount > 0) {
+                    if (lead.outreach) {
+                        await query(`
+              INSERT INTO lead_activities (lead_id, user_id, action_type, note)
+              VALUES ($1, $2, 'note_added', $3)
+            `, [newLead.rows[0].id, user.id, `AI Suggested Outreach:\n\n${lead.outreach}`]);
+                    }
+                    savedCount++; // Only count it as saved if it wasn't a duplicate
                 }
 
-                savedCount++;
             } catch (dbError) {
                 console.error("DB Save Error:", dbError.message);
             }
