@@ -1,3 +1,4 @@
+// src/app/api/scraper/run/route.js
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { scrapeReddit, scrapeTwitter, scrapeFacebook } from '@/lib/apify';
@@ -14,15 +15,14 @@ export async function POST(req) {
         const user = jwt.verify(token, process.env.JWT_SECRET);
         if (user.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-        const { platform, limit, url } = await req.json();
+        const { platform, limit, url, category } = await req.json(); 
         let rawItems = [];
 
-        if (platform === 'reddit') rawItems = await scrapeReddit(limit);
-        else if (platform === 'twitter') rawItems = await scrapeTwitter(limit);
-        else if (platform === 'facebook') rawItems = await scrapeFacebook(limit, url);
+        if (platform === 'reddit') rawItems = await scrapeReddit(limit, category);
+        else if (platform === 'twitter') rawItems = await scrapeTwitter(limit, category);
+        else if (platform === 'facebook') rawItems = await scrapeFacebook(limit, category, url);
         else return NextResponse.json({ error: 'Invalid platform' }, { status: 400 });
 
-        // Temporary storage arrays
         const highLeads = [];
         const mediumLeads = [];
         const lowLeads = [];
@@ -30,8 +30,7 @@ export async function POST(req) {
         // Process through AI
         for (const item of rawItems) {
             if (!item.content) continue;
-
-            const aiResult = await analyzeScrapedLead(item.content, item.platform);
+            const aiResult = await analyzeScrapedLead(item.content, item.platform, category);
 
             if (aiResult.intent !== 'irrelevant') {
                 const fullLead = { ...item, ...aiResult };
@@ -41,40 +40,71 @@ export async function POST(req) {
             }
         }
 
-        // Determine what to save based on the new rules
         let leadsToSave = [...highLeads, ...mediumLeads];
         let fallbackTriggered = false;
 
-        // If no High or Medium leads were found, save the Low leads instead
         if (leadsToSave.length === 0 && lowLeads.length > 0) {
             leadsToSave = [...lowLeads];
             fallbackTriggered = true;
         }
 
+        // ROUND ROBIN ASSIGNMENT PREP
+        // Fetch all active sales reps
+        const salesRepsResult = await query(`SELECT id FROM users WHERE role = 'sales' AND status = 'approved' ORDER BY id ASC`);
+        const salesReps = salesRepsResult.rows;
+
         let savedCount = 0;
 
-        // Save to Database
-        for (const lead of leadsToSave) {
+        // Map the Category to the DB Types based on your CRM structure
+        let dbType = 'Client'; // Default
+        let dbCategory = category;
+        if (category === 'Internal AI Agency') { dbType = 'Internal'; dbCategory = 'AI Automation'; }
+        if (category === '3VLT') { dbType = 'Client'; dbCategory = '3vltn Business'; }
+        if (category === 'Trenew') { dbType = 'Client'; dbCategory = 'Trerenew'; }
+
+        // Save directly to main `leads` table
+        for (let i = 0; i < leadsToSave.length; i++) {
+            const lead = leadsToSave[i];
+
+            // Determine assignee using Round Robin (modulo math)
+            let assignedToId = null;
+            if (salesReps.length > 0) {
+                assignedToId = salesReps[i % salesReps.length].id;
+            }
+
             try {
-                await query(
-                    `INSERT INTO scraped_leads (platform, author_name, content, url, author_email, intent, score, outreach_draft) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (url) DO NOTHING`,
-                    [lead.platform, lead.author_name, lead.content, lead.url, lead.email || null, lead.intent, lead.score, lead.outreach]
-                );
+                const sourceStr = `Scraped (${lead.platform}) - ${lead.url}`;
+
+                // Insert into main leads table 
+                const newLead = await query(`
+          INSERT INTO leads (name, email, source, type, category, status, assigned_to, created_by)
+          VALUES ($1, $2, $3, $4, $5, 'New', $6, $7)
+          RETURNING id
+        `, [
+                    lead.author_name, lead.email || null, sourceStr, dbType, dbCategory, assignedToId, user.id
+                ]);
+
+                // Add AI Draft as a note
+                if (lead.outreach) {
+                    await query(`
+            INSERT INTO lead_activities (lead_id, user_id, action_type, note)
+            VALUES ($1, $2, 'note_added', $3)
+          `, [newLead.rows[0].id, user.id, `AI Suggested Outreach:\n\n${lead.outreach}`]);
+                }
+
                 savedCount++;
             } catch (dbError) {
                 console.error("DB Save Error:", dbError.message);
             }
         }
 
-        // Construct a detailed response message
-        let finalMessage = `Scraped ${rawItems.length} posts. `;
+        let finalMessage = `Scraped ${rawItems.length} posts for ${category}. `;
         if (savedCount > 0) {
             finalMessage += fallbackTriggered
-                ? `No Hot/Medium leads found. Falling back to save ${savedCount} Low priority leads.`
-                : `Saved ${savedCount} High/Medium priority leads.`;
+                ? `Saved & Assigned ${savedCount} Low priority leads.`
+                : `Saved & Assigned ${savedCount} High/Medium priority leads.`;
         } else {
-            finalMessage += `No relevant domain leads found at all.`;
+            finalMessage += `No relevant leads found.`;
         }
 
         return NextResponse.json({ success: true, message: finalMessage });
