@@ -1,22 +1,38 @@
-export async function analyzeScrapedLead(text, platform) {
+export async function analyzeScrapedLead(text, platform, category) {
     if (!text || text.length < 15) return { intent: "irrelevant", score: "low" };
 
+    let rules = "";
+    if (category === '3VLT') {
+        rules = `
+    - "buyer": User EXPLICITLY states they have budget and want to buy/acquire a domain NOW.
+    - "seller": User EXPLICITLY states they own a high-value domain and want to sell it NOW.
+    - "irrelevant": General tech chat, web hosting issues.`;
+    } else if (category === 'Internal AI Agency') {
+        rules = `
+    - "buyer": User needs a developer, automation software help, or AI MVP built.
+    - "seller": (Rarely used here, mark as buyer if they need a service).
+    - "irrelevant": Just sharing AI news, ChatGPT prompts, or general discussion.`;
+    } else if (category === 'Trenew') {
+        rules = `
+    - "buyer": Homeowner explicitly asking for roofing, HVAC, or solar panel installation quotes/repair.
+    - "seller": (Not applicable, mark as buyer if they need a service).
+    - "irrelevant": DIY questions, general home complaints without asking for professional help.`;
+    }
+
     const prompt = `
-    You are a Lead Qualification AI for '3vltn Business' (A Premium Domain Name Marketplace).
+    You are a STRICT Lead Qualification AI for '${category}'.
     Categorize the following social media post.
 
     Platform: ${platform}
     Post: "${text.substring(0, 1000)}" 
 
     INTENT RULES:
-    - "buyer": Looking to acquire a domain, asking for naming ideas, or looking for marketplaces.
-    - "seller": Trying to sell, auction, or get an appraisal for a domain they own.
-    - "irrelevant": General tech chat, web hosting issues, active directory, coding. Mark as irrelevant.
+    ${rules}
 
-    SCORING RULES (Only apply if intent is buyer/seller):
-    - "high": Ready to transact NOW. Explicitly mentions buying/selling a specific asset or has a budget.
-    - "medium": Exploring options. Asking for appraisals, looking for marketplace recommendations, or brainstorming startup names.
-    - "low": Very vague interest. Mentioning domains in passing but might be open to a pitch.
+    SCORING RULES:
+    - "high": Ready to transact NOW. Explicitly needs the service or asset.
+    - "medium": Exploring options. Asking for recommendations or quotes.
+    - "low": Very vague interest. 
 
     Return JSON ONLY: 
     { 
@@ -38,20 +54,15 @@ export async function analyzeScrapedLead(text, platform) {
                 model: "gpt-4-turbo",
                 messages: [{ role: "user", content: prompt }],
                 response_format: { type: "json_object" },
-                temperature: 0.1
+                temperature: 0.2
             })
         });
 
         const data = await response.json();
-
-        if (data.error) {
-            console.error("OpenAI API Error:", data.error.message);
-            return { intent: "irrelevant", score: "low" };
-        }
+        if (data.error) return { intent: "irrelevant", score: "low" };
 
         return JSON.parse(data.choices[0].message.content);
     } catch (e) {
-        console.error("AI Error:", e.message);
         return { intent: "irrelevant", score: "low" };
     }
 }
