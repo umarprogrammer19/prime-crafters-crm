@@ -75,7 +75,7 @@ export default function ClientLeadsPage() {
                                 <tr>
                                     <th className="px-6 py-4">Lead Info</th>
                                     <th className="px-6 py-4">Category</th>
-                                    <th className="px-6 py-4">Source</th>
+                                    <th className="px-6 py-4 w-1/3">Scraped Post</th>
                                     <th className="px-6 py-4">Status</th>
                                     <th className="px-6 py-4">Assigned To</th>
                                 </tr>
@@ -89,10 +89,32 @@ export default function ClientLeadsPage() {
                                     >
                                         <td className="px-6 py-4">
                                             <p className="font-semibold text-gray-900">{lead.name}</p>
-                                            <p className="text-gray-500">{lead.company || lead.email}</p>
+                                            <p className="text-gray-500 text-xs">{lead.company || lead.email}</p>
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-700">{lead.category}</td>
-                                        <td className="px-6 py-4 text-gray-500">{lead.source || '-'}</td>
+
+                                        {/* Post Snippet & Link */}
+                                        <td className="px-6 py-4">
+                                            {lead.content ? (
+                                                <div className="text-sm text-gray-900 truncate max-w-[250px]">
+                                                    "{lead.content}"
+                                                </div>
+                                            ) : (
+                                                <span className="text-gray-400 italic text-sm">Added manually</span>
+                                            )}
+                                            {lead.url && (
+                                                <a
+                                                    href={lead.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="text-xs text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center mt-1 font-medium transition-colors"
+                                                >
+                                                    View Source <ExternalLink className="w-3 h-3 ml-1" />
+                                                </a>
+                                            )}
+                                        </td>
+
                                         <td className="px-6 py-4">
                                             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(lead.status)}`}>
                                                 {lead.status}
