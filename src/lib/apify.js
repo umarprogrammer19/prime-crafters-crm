@@ -2,11 +2,31 @@
 const getSearchTerms = (category) => {
     switch (category) {
         case '3VLT':
-            return ["Selling domain", "Looking to buy domain", "Domain for sale", "Domain marketplace", "Buy premium domain"];
+            // Targeting: Startups needing names, investors flipping, direct buyers/sellers
+            return [
+                "looking to buy domain", "buy premium domain", "WTB domain", // Buyer intent
+                "domain for sale", "selling premium domain", "domain portfolio", // Seller intent
+                "startup naming ideas", "need a domain for startup", "brandable domain", // Startup intent
+                "domain appraisal", "domain broker", "exact match domain", "domain flipping" // Industry jargon
+            ];
+
         case 'Internal AI Agency':
-            return ["Looking for AI developer", "Need AI tool / AI SaaS", "Building AI startup", "Automation software help", "AI MVP developer needed"];
+            // Targeting: Founders needing devs, businesses needing automation, specific tech stacks
+            return [
+                "looking for AI developer", "hire AI developer", "need AI tool", // Direct hiring
+                "building AI startup", "looking for technical co-founder AI", "AI MVP developer needed", // Founders
+                "automate my workflow", "automation software help", "Zapier expert needed", "Make.com expert", // Automation
+                "custom AI solution", "OpenAI API integration", "build an AI agent", "custom LLM", "AI chatbot developer" // Tech-specific
+            ];
+
         case 'Trenew':
-            return ["Roof replacement", "Need roofer / HVAC / AC repair", "Solar panel installer", "Roof leak repair", "HVAC replacement quote"];
+            // Targeting: Urgent home repairs, requests for local quotes, specific system failures
+            return [
+                "roof replacement", "need a new roof", "leaking roof repair", "roofing contractor recommendations", // Roofing
+                "solar panel quote", "solar panel installer", "best solar company", "home energy audit", // Solar
+                "HVAC replacement quote", "AC repair near me", "furnace replacement", "HVAC stopped working", "HVAC technician needed" // HVAC
+            ];
+
         default:
             return ["buy", "sell"];
     }
