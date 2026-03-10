@@ -93,9 +93,9 @@ export async function scrapeTwitter(limit = 10, category) {
 
 export async function scrapeFacebook(limit = 10, category, customUrl = null) {
     const defaultUrls = {
-        '3VLT': ["https://www.facebook.com/groups/domainbusiness", "https://www.facebook.com/groups/bestwebhostingdomainflip"],
-        'Internal AI Agency': ["https://www.facebook.com/groups/saasfounders", "https://www.facebook.com/groups/artificialintelligenceforbusiness"],
-        'Trenew': ["https://www.facebook.com/groups/homeimprovement", "https://www.facebook.com/groups/hvacadvice"]
+        '3VLT': ["https://www.facebook.com/groups/sellingdomain", "https://www.facebook.com/groups/NaganeneHarusAffiliateMarketingIntlWrldwideGroups", "https://www.facebook.com/groups/domaincity", "https://www.facebook.com/groups/535342753181963", "https://www.facebook.com/groups/301201911798602"],
+        'Internal AI Agency': ["https://www.facebook.com/groups/saasfounders", "https://www.facebook.com/groups/1853909482666355/", "https://www.facebook.com/groups/646961952787500/", "https://www.facebook.com/groups/artificialintelligenceforbusiness"],
+        'Trenew': ["https://www.facebook.com/groups/homeimprovement", "https://www.facebook.com/groups/wasicraft.com.pk", "https://www.facebook.com/groups/hvacadvice", "https://www.facebook.com/groups/160291351257714/"],
     };
 
     const urlsToUse = defaultUrls[category] || defaultUrls['3VLT'];
