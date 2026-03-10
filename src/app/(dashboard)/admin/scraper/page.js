@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Search, Loader2, Database, Globe, Twitter, MessageCircle } from 'lucide-react';
 
 export default function ScraperControlPanel() {
-    const [formData, setFormData] = useState({ platform: 'reddit', limit: 10, url: '' });
+    const [formData, setFormData] = useState({ platform: 'reddit', limit: 10, url: '', category: "3VLT" });
     const [isScraping, setIsScraping] = useState(false);
     const [statusMessage, setStatusMessage] = useState('');
     const [result, setResult] = useState(null);
@@ -54,7 +54,7 @@ export default function ScraperControlPanel() {
 
             {/* Full-Screen Blocking Loader */}
             {isScraping && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/80 backdrop-blur-md">
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-gray-900/80 backdrop-blur-md">
                     <div className="bg-white p-10 rounded-3xl shadow-2xl flex flex-col items-center max-w-sm w-full text-center transform transition-all">
                         <div className="relative mb-6">
                             <div className="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-75"></div>
@@ -102,7 +102,18 @@ export default function ScraperControlPanel() {
 
             <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
                 <form onSubmit={handleScrape} className="space-y-6">
-
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Business Category</label>
+                        <select
+                            value={formData.category || '3VLT'}
+                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                            <option value="3VLT">3VLT (Domain Selling)</option>
+                            <option value="Internal AI Agency">Internal AI Agency (AI SaaS)</option>
+                            <option value="Trenew">Trenew (Roofing, Solar, HVAC)</option>
+                        </select>
+                    </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Target Platform</label>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -180,8 +191,8 @@ function PlatformButton({ active, onClick, icon: Icon, label }) {
             type="button"
             onClick={onClick}
             className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all ${active
-                    ? 'border-blue-600 bg-blue-50 text-blue-700 font-semibold'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                ? 'border-blue-600 bg-blue-50 text-blue-700 font-semibold'
+                : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
                 }`}
         >
             <Icon className={`w-5 h-5 ${active ? 'text-blue-600' : 'text-gray-400'}`} />
