@@ -21,7 +21,6 @@ export default function Sidebar({ user }) {
         { name: 'Overview', href: '/dashboard', icon: LayoutDashboard, roles: ['admin', 'sales', 'marketing'] },
         { name: 'Internal Leads', href: '/dashboard/internal', icon: Briefcase, roles: ['admin', 'sales', 'marketing'] },
         { name: 'Client Leads', href: '/dashboard/clients', icon: Building2, roles: ['admin', 'sales', 'marketing'] },
-        { name: 'Lead Queue', href: '/dashboard/staging', icon: Filter, roles: ['admin', 'marketing'] },
         // Admin Only
         { name: 'Team Approvals', href: '/admin/approvals', icon: ShieldCheck, roles: ['admin'] },
         { name: 'All Users', href: '/admin/users', icon: Users, roles: ['admin'] },
