@@ -1,7 +1,7 @@
 'use client';
 
 import AddLeadModal from '@/app/components/AddLeadModal';
-import { Loader2, Plus } from 'lucide-react';
+import { ExternalLink, Loader2, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
