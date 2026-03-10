@@ -12,6 +12,17 @@ const getSearchTerms = (category) => {
     }
 };
 
+// Safe extractor to prevent the .map() crash
+const extractItems = (data, platform) => {
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.items)) return data.items;
+    if (data && data.data && Array.isArray(data.data.items)) return data.data.items;
+
+    // If we get here, Apify sent back an error or unexpected object. Let's log it.
+    console.error(`[${platform.toUpperCase()} SCRAPER ERROR]:`, JSON.stringify(data).substring(0, 300));
+    return []; // Return empty array so the app doesn't crash
+};
+
 export async function scrapeReddit(limit = 10, category) {
     const url = `https://api.apify.com/v2/acts/trudax~reddit-scraper-lite/run-sync-get-dataset-items?token=${process.env.APIFY_API_TOKEN}`;
 
@@ -25,9 +36,10 @@ export async function scrapeReddit(limit = 10, category) {
         })
     });
 
-    const items = await res.json();
+    const data = await res.json();
+    const items = extractItems(data, 'reddit');
 
-    return (items || []).map(item => ({
+    return items.map(item => ({
         platform: 'reddit',
         content: `${item.title || ''}\n${item.body || ''}`.trim(),
         url: item.url,
@@ -48,9 +60,10 @@ export async function scrapeTwitter(limit = 10, category) {
         })
     });
 
-    const items = await res.json();
+    const data = await res.json();
+    const items = extractItems(data, 'twitter');
 
-    return (items || []).map(item => ({
+    return items.map(item => ({
         platform: 'twitter',
         content: item.text || item.full_text || "",
         url: `https://twitter.com/${item.author?.userName}/status/${item.id}`,
@@ -59,7 +72,6 @@ export async function scrapeTwitter(limit = 10, category) {
 }
 
 export async function scrapeFacebook(limit = 10, category, customUrl = null) {
-    // Default URLs based on category
     const defaultUrls = {
         '3VLT': ["https://www.facebook.com/groups/domainbusiness", "https://www.facebook.com/groups/bestwebhostingdomainflip"],
         'Internal AI Agency': ["https://www.facebook.com/groups/saasfounders", "https://www.facebook.com/groups/artificialintelligenceforbusiness"],
@@ -82,9 +94,10 @@ export async function scrapeFacebook(limit = 10, category, customUrl = null) {
         })
     });
 
-    const items = await res.json();
+    const data = await res.json();
+    const items = extractItems(data, 'facebook');
 
-    return (items || []).map(item => ({
+    return items.map(item => ({
         platform: 'facebook',
         content: item.text || "",
         url: item.url,
