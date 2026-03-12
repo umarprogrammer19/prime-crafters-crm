@@ -1,34 +1,70 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { Plus, Search, Loader2, ExternalLink, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import AddLeadModal from '@/app/components/AddLeadModal';
-import { ExternalLink, Loader2, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 export default function ClientLeadsPage() {
+    const router = useRouter();
+
+    // Data States
     const [leads, setLeads] = useState([]);
+    const [salesReps, setSalesReps] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [userRole, setUserRole] = useState(null);
-    const router = useRouter();
+
+    // Filter & Pagination States
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [filters, setFilters] = useState({
+        search: '',
+        status: '',
+        category: '',
+        platform: '',
+        assigned_to: ''
+    });
 
     useEffect(() => {
         fetch('/api/auth/me').then(r => r.json()).then(d => {
             if (d.user) setUserRole(d.user.role);
         });
-        fetchLeads();
     }, []);
 
+    // Fetch leads whenever page or filters change
+    useEffect(() => {
+        fetchLeads();
+    }, [page, filters.status, filters.category, filters.platform, filters.assigned_to]);
+
     const fetchLeads = async () => {
+        setLoading(true);
         try {
-            const res = await fetch('/api/leads?type=Client');
+            // Build the query string dynamically
+            const queryParams = new URLSearchParams({ type: 'Client', page });
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value) queryParams.append(key, value);
+            });
+
+            const res = await fetch(`/api/leads?${queryParams.toString()}`);
             const data = await res.json();
-            if (data.success) setLeads(data.leads);
+
+            if (data.success) {
+                setLeads(data.leads);
+                if (data.salesReps) setSalesReps(data.salesReps);
+                setTotalPages(data.pagination.totalPages);
+            }
         } catch (err) {
             console.error('Failed to fetch client leads');
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        setPage(1); // Reset to page 1 on new search
+        fetchLeads();
     };
 
     const getStatusColor = (status) => {
@@ -62,12 +98,78 @@ export default function ClientLeadsPage() {
                 )}
             </div>
 
+            {/* FILTER BAR */}
+            <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-col lg:flex-row gap-4">
+
+                {/* Search Input */}
+                <form onSubmit={handleSearchSubmit} className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Search names, emails, or posts..."
+                        value={filters.search}
+                        onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                    />
+                </form>
+
+                {/* Filter Dropdowns */}
+                <div className="flex flex-wrap gap-3">
+                    <select
+                        value={filters.category}
+                        onChange={(e) => { setFilters({ ...filters, category: e.target.value }); setPage(1); }}
+                        className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm text-gray-700 font-medium"
+                    >
+                        <option value="">All Categories</option>
+                        <option value="3vltn Business">3vltn Business</option>
+                        <option value="Trerenew">Trerenew</option>
+                        <option value="AI Automation">AI Automation</option>
+                    </select>
+
+                    <select
+                        value={filters.platform}
+                        onChange={(e) => { setFilters({ ...filters, platform: e.target.value }); setPage(1); }}
+                        className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm text-gray-700 font-medium"
+                    >
+                        <option value="">All Platforms</option>
+                        <option value="reddit">Reddit</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="twitter">X (Twitter)</option>
+                    </select>
+
+                    <select
+                        value={filters.status}
+                        onChange={(e) => { setFilters({ ...filters, status: e.target.value }); setPage(1); }}
+                        className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm text-gray-700 font-medium"
+                    >
+                        <option value="">All Statuses</option>
+                        <option value="New">New</option>
+                        <option value="Contacted">Contacted</option>
+                        <option value="Follow-up">Follow-up</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+
+                    {userRole !== 'sales' && (
+                        <select
+                            value={filters.assigned_to}
+                            onChange={(e) => { setFilters({ ...filters, assigned_to: e.target.value }); setPage(1); }}
+                            className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm text-gray-700 font-medium"
+                        >
+                            <option value="">All Reps</option>
+                            {salesReps.map(rep => (
+                                <option key={rep.id} value={rep.id}>{rep.name}</option>
+                            ))}
+                        </select>
+                    )}
+                </div>
+            </div>
+
             {/* Table */}
             <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mt-6">
                 {loading ? (
                     <div className="py-20 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-blue-500" /></div>
                 ) : leads.length === 0 ? (
-                    <div className="py-20 text-center text-gray-500">No client leads found.</div>
+                    <div className="py-20 text-center text-gray-500">No leads found matching your criteria.</div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
@@ -93,7 +195,7 @@ export default function ClientLeadsPage() {
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-700">{lead.category}</td>
 
-                                        {/* Post Snippet & Link */}
+                                        {/* Post Snippet & Link with stopPropagation */}
                                         <td className="px-6 py-4">
                                             {lead.content ? (
                                                 <div className="text-sm text-gray-900 truncate max-w-[250px]">
@@ -129,13 +231,36 @@ export default function ClientLeadsPage() {
                         </table>
                     </div>
                 )}
+
+                {/* PAGINATION FOOTER */}
+                {!loading && totalPages > 1 && (
+                    <div className="flex items-center justify-between bg-gray-50 px-6 py-4 border-t border-gray-200">
+                        <button
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                            className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-colors"
+                        >
+                            <ChevronLeft className="w-4 h-4 mr-1" /> Prev
+                        </button>
+                        <span className="text-sm text-gray-600 font-medium">
+                            Page {page} of {totalPages}
+                        </span>
+                        <button
+                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            disabled={page === totalPages}
+                            className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-colors"
+                        >
+                            Next <ChevronRight className="w-4 h-4 ml-1" />
+                        </button>
+                    </div>
+                )}
             </div>
 
             <AddLeadModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                initialType="Client" // <--- Defaults to Client options in the dropdown
-                onLeadAdded={(newLead) => setLeads([newLead, ...leads])}
+                initialType="Client"
+                onLeadAdded={() => fetchLeads()}
             />
         </div>
     );
