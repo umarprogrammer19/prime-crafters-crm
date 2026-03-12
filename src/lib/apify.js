@@ -18,10 +18,9 @@ const getSearchTerms = (category) => {
         case 'Trenew':
             // Hyper-focused Bay Area keywords
             return [
-                "roof replacement bay area", "need a new roof san francisco", "leaking roof repair san jose",
-                "roofing contractor oakland", "solar panel quote bay area", "solar panel installer san francisco",
-                "best solar company san jose", "HVAC replacement quote bay area", "AC repair near me san francisco",
-                "furnace replacement oakland", "HVAC stopped working san jose"
+                "roof replacement Bay Area", "need a new roof San Francisco", "leaking roof repair Oakland", "Bay area roofer recommendations",
+                "solar panel quote San Jose", "Bay Area solar panel installer", "best solar company Bay Area",
+                "HVAC replacement quote Bay Area", "AC repair near me San Francisco", "furnace replacement Oakland", "Bay Area HVAC technician"
             ];
         default:
             return ["buy", "sell"];
