@@ -123,7 +123,6 @@ export default function ClientLeadsPage() {
                         <option value="">All Categories</option>
                         <option value="3vltn Business">3vltn Business</option>
                         <option value="Trerenew">Trerenew</option>
-                        <option value="AI Automation">AI Automation</option>
                     </select>
 
                     <select
