@@ -2,31 +2,27 @@
 const getSearchTerms = (category) => {
     switch (category) {
         case '3VLT':
-            // Targeting: Startups needing names, investors flipping, direct buyers/sellers
             return [
-                "looking to buy domain", "buy premium domain", "WTB domain", // Buyer intent
-                "domain for sale", "selling premium domain", "domain portfolio", // Seller intent
-                "startup naming ideas", "need a domain for startup", "brandable domain", // Startup intent
-                "domain appraisal", "domain broker", "exact match domain", "domain flipping" // Industry jargon
+                "looking to buy domain", "buy premium domain", "WTB domain",
+                "domain for sale", "selling premium domain", "domain portfolio",
+                "startup naming ideas", "need a domain for startup", "brandable domain",
+                "domain appraisal", "domain broker", "exact match domain", "domain flipping"
             ];
-
         case 'Internal AI Agency':
-            // Targeting: Founders needing devs, businesses needing automation, specific tech stacks
             return [
-                "looking for AI developer", "hire AI developer", "need AI tool", // Direct hiring
-                "building AI startup", "looking for technical co-founder AI", "AI MVP developer needed", // Founders
-                "automate my workflow", "automation software help", "Zapier expert needed", "Make.com expert", // Automation
-                "custom AI solution", "OpenAI API integration", "build an AI agent", "custom LLM", "AI chatbot developer" // Tech-specific
+                "looking for AI developer", "hire AI developer", "need AI tool",
+                "building AI startup", "looking for technical co-founder AI", "AI MVP developer needed",
+                "automate my workflow", "automation software help", "Zapier expert needed", "Make.com expert",
+                "custom AI solution", "OpenAI API integration", "build an AI agent", "custom LLM", "AI chatbot developer"
             ];
-
         case 'Trenew':
-            // Targeting: Urgent home repairs, requests for local quotes, specific system failures
+            // Hyper-focused Bay Area keywords
             return [
-                "roof replacement", "need a new roof", "leaking roof repair", "roofing contractor recommendations", // Roofing
-                "solar panel quote", "solar panel installer", "best solar company", "home energy audit", // Solar
-                "HVAC replacement quote", "AC repair near me", "furnace replacement", "HVAC stopped working", "HVAC technician needed" // HVAC
+                "roof replacement bay area", "need a new roof san francisco", "leaking roof repair san jose",
+                "roofing contractor oakland", "solar panel quote bay area", "solar panel installer san francisco",
+                "best solar company san jose", "HVAC replacement quote bay area", "AC repair near me san francisco",
+                "furnace replacement oakland", "HVAC stopped working san jose"
             ];
-
         default:
             return ["buy", "sell"];
     }
