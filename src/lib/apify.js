@@ -72,26 +72,46 @@ const extractItems = (data, platform) => {
 };
 
 export async function scrapeReddit(limit = 10, category) {
-    const url = `https://api.apify.com/v2/acts/trudax~reddit-scraper-lite/run-sync-get-dataset-items?token=${process.env.APIFY_API_TOKEN}`;
+    const url = `https://api.apify.com/v2/acts/trudax~reddit-scraper/run-sync-get-dataset-items?token=${process.env.APIFY_API_TOKEN}`;
 
     const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            searches: getSearchTerms(category),
+            startUrls: getSubredditUrls(category),
+            skipComments: true,
+            skipUserPosts: false,
+            skipCommunity: false,
+            ignoreStartUrls: false,
+            searchPosts: true,
+            searchComments: false,
+            searchCommunities: false,
+            searchUsers: false,
             sort: "new",
+            includeNSFW: false,
             maxItems: parseInt(limit),
+            maxPostCount: parseInt(limit),
+            maxComments: 0,
+            maxCommunitiesCount: 2,
+            maxUserCount: 2,
+            scrollTimeout: 40,
+            proxy: {
+                useApifyProxy: true,
+                apifyProxyGroups: ["RESIDENTIAL"]
+            },
+            debugMode: false
         })
     });
 
     const data = await res.json();
-    const items = extractItems(data, 'reddit');
+    const rawItems = extractItems(data, 'reddit');
+    const strictItems = rawItems.slice(0, parseInt(limit));
 
-    return items.map(item => ({
+    return strictItems.map(item => ({
         platform: 'reddit',
-        content: `${item.title || ''}\n${item.body || ''}`.trim(),
-        url: item.url,
-        author_name: item.username || "Unknown",
+        content: `${item.title || ''}\n${item.selftext || item.text || item.body || ''}`.trim(),
+        url: item.url || (item.permalink ? `https://reddit.com${item.permalink}` : ''),
+        author_name: item.author || item.username || "Unknown",
     }));
 }
 
