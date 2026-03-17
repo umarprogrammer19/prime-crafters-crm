@@ -38,7 +38,8 @@ export async function POST(req) {
             }
 
             try {
-                // The new SQL query that blocks duplicate usernames AND duplicate URLs
+                const sourceStr = lead.url ? `CSV Upload - ${lead.url}` : `CSV Upload - ${lead.name} - ${i}`;
+
                 const newLead = await query(`
                     INSERT INTO leads (name, email, source, type, category, status, assigned_to, created_by, content, url)
                     SELECT $1, $2, $3, $4, $5, 'New', $6, $7, $8, $9
@@ -49,7 +50,7 @@ export async function POST(req) {
                 `, [
                     lead.name || 'Unknown CSV Lead',
                     lead.email || null,
-                    lead.source || 'CSV Upload',
+                    sourceStr,
                     dbType,
                     dbCategory,
                     assignedToId,
@@ -61,7 +62,7 @@ export async function POST(req) {
                 if (newLead.rowCount > 0) {
                     savedCount++;
                 } else {
-                    duplicateCount++; // Caught by the "One Per Username" rule!
+                    duplicateCount++;
                 }
             } catch (err) {
                 console.error("CSV DB Insert Error:", err.message);
