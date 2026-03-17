@@ -3,7 +3,7 @@ import { Database } from 'lucide-react';
 
 export default function ImportLeadsPage() {
     return (
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto">
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                     <Database className="w-7 h-7 text-blue-600" />

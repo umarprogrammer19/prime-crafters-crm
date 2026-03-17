@@ -8,7 +8,10 @@ import {
     Users,
     Activity,
     Database,
-    Filter
+    Filter,
+    DatabaseIcon,
+    DatabaseBackup,
+    ScatterChart
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -25,7 +28,8 @@ export default function Sidebar({ user }) {
         { name: 'Team Approvals', href: '/admin/approvals', icon: ShieldCheck, roles: ['admin'] },
         { name: 'All Users', href: '/admin/users', icon: Users, roles: ['admin'] },
         { name: 'System Logs', href: '/admin/logs', icon: Activity, roles: ['admin'] },
-        { name: 'Scraper Hub', href: '/admin/scraper', icon: Database, roles: ['admin'] },
+        { name: 'Scraper Hub', href: '/admin/scraper', icon: ScatterChart, roles: ['admin'] },
+        { name: 'Import Leads (CSV)', href: '/admin/import', icon: DatabaseBackup, roles: ['admin'] },
     ];
 
     const filteredNav = navItems.filter(item => item.roles.includes(user?.role));
