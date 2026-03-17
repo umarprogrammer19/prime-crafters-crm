@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Search, Loader2, Database, Globe, Twitter, MessageCircle } from 'lucide-react';
+import { Database, Globe, Loader2, MessageCircle, Search, Twitter } from 'lucide-react';
+import { useState } from 'react';
 
 export default function ScraperControlPanel() {
     const [formData, setFormData] = useState({ platform: 'reddit', limit: 10, url: '', category: "3VLT" });
