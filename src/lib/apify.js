@@ -1,27 +1,33 @@
-// Helper to get keywords based on business category
+// The Ultimate High-Intent Keyword Matrix
 const getSearchTerms = (category) => {
     switch (category) {
         case '3VLT':
+            // Targeting: Direct acquisitions, startup founders, and portfolio liquidations
             return [
-                "looking to buy domain", "buy premium domain", "WTB domain",
-                "domain for sale", "selling premium domain", "domain portfolio",
-                "startup naming ideas", "need a domain for startup", "brandable domain",
-                "domain appraisal", "domain broker", "exact match domain", "domain flipping"
+                "looking to buy domain", "buy premium domain", "WTB domain", "acquire domain name",
+                "domain for sale", "selling premium domain", "domain portfolio for sale", "liquidating domains",
+                "startup naming ideas", "need a domain for my startup", "brandable domain name",
+                "domain appraisal needed", "recommend a domain broker", "exact match domain", "where to sell premium domains"
             ];
+
         case 'Internal AI Agency':
+            // Targeting: Founders with budgets, businesses needing immediate automation, custom dev requests
             return [
-                "looking for AI developer", "hire AI developer", "need AI tool",
-                "building AI startup", "looking for technical co-founder AI", "AI MVP developer needed",
-                "automate my workflow", "automation software help", "Zapier expert needed", "Make.com expert",
-                "custom AI solution", "OpenAI API integration", "build an AI agent", "custom LLM", "AI chatbot developer"
+                "looking for AI developer", "hire AI developer", "hire AI agency", "need custom AI tool",
+                "custom LLM development", "RAG implementation help", "need to build an AI chatbot",
+                "automate my workflow", "automation expert needed", "Zapier expert needed", "Make.com freelancer",
+                "automate manual data entry", "looking for technical co-founder SaaS", "need an MVP built fast",
+                "connect my CRM to", "streamline business operations AI"
             ];
+
         case 'Trenew':
-            // Hyper-focused Bay Area keywords
+            // Targeting: Urgent repairs and direct requests for local Bay Area quotes
             return [
-                "roof replacement Bay Area", "need a new roof San Francisco", "leaking roof repair Oakland", "Bay area roofer recommendations",
-                "solar panel quote San Jose", "Bay Area solar panel installer", "best solar company Bay Area",
-                "HVAC replacement quote Bay Area", "AC repair near me San Francisco", "furnace replacement Oakland", "Bay Area HVAC technician"
+                "roof replacement quote Bay Area", "need a new roof San Francisco", "roof leak repair Oakland", "recommend a roofer SF", "storm damage roof repair",
+                "solar installer recommendations Bay Area", "solar panel quote San Jose", "home battery backup installer", "best solar company near me",
+                "HVAC replacement quote Bay Area", "AC broken who to call", "furnace replacement Oakland", "HVAC tech recommendations", "mini split installer Bay Area", "AC blowing warm air"
             ];
+
         default:
             return ["buy", "sell"];
     }
