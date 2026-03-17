@@ -77,9 +77,11 @@ export async function POST(req) {
 
                 // Added ON CONFLICT (source) DO NOTHING
                 const newLead = await query(`
-                INSERT INTO leads (name, email, source, type, category, status, assigned_to, created_by,    content, url)
-                VALUES ($1, $2, $3, $4, $5, 'New', $6, $7, $8, $9)
-                ON CONFLICT (source) DO NOTHING 
+                INSERT INTO leads (name, email, source, type, category, status, assigned_to, created_by, content, url)
+                SELECT $1, $2, $3, $4, $5, 'New', $6, $7, $8, $9
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM leads WHERE name = $1 OR source = $3
+                )
                 RETURNING id`, [
                     lead.author_name,
                     lead.email || null,
