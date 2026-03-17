@@ -11,10 +11,11 @@ export async function analyzeScrapedLead(text, platform, category) {
     - "seller": Anyone trying to sell a domain, asking for a domain appraisal, or showing off a domain portfolio to sell.
     - "irrelevant": Tech support for DNS, web hosting server issues, coding problems.`;
     } else if (category === 'Internal AI Agency') {
-        categoryContext = `Business: We are a B2B AI Development and Automation Agency / Service Provider. We build custom AI tools, automate workflows, and develop SaaS MVPs for clients.
-    - "buyer": Anyone complaining about manual data entry, asking how to build an AI tool, looking to hire developers/agencies, or wanting to automate their small business operations. If they have a problem we can build a solution for, they are a buyer.
-    - "seller": Ignore. Treat as irrelevant.
-    - "irrelevant": People just playing with ChatGPT, students asking for homework help, sharing AI news articles, or discussing AI ethics without a business use case.`;
+        categoryContext = `
+    Business: AI Development & Automation Agency.
+    - "buyer": Anyone looking to hire a developer, asking how to automate a workflow (Zapier/Make), struggling to build an AI feature, or asking for recommendations for custom AI tools.
+    - "seller": (Rare) Treat as buyer if they need an agency partner.
+    - "irrelevant": Sharing generic AI news, posting ChatGPT prompts, debating AI philosophy without a business use case.`;
     } else if (category === 'Trenew') {
         categoryContext = `
     Business: Roofing, Solar, and HVAC Home Improvement.

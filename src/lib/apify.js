@@ -78,7 +78,7 @@ const extractItems = (data, platform) => {
 };
 
 export async function scrapeReddit(limit = 10, category) {
-    const url = `https://api.apify.com/v2/acts/trudax~reddit-scraper/run-sync-get-dataset-items?token=${process.env.APIFY_API_TOKEN}`;
+    const url = `https://api.apify.com/v2/acts/trudax~reddit-scraper-lite/run-sync-get-dataset-items?token=${process.env.APIFY_API_TOKEN}`;
 
     const res = await fetch(url, {
         method: 'POST',
