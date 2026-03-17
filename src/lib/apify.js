@@ -27,6 +27,39 @@ const getSearchTerms = (category) => {
     }
 };
 
+// Helper to get specific subreddits for trudax~reddit-scraper
+const getSubredditUrls = (category) => {
+    let urls = [];
+    if (category === '3VLT') {
+        urls = [
+            "https://www.reddit.com/r/Domains/",
+            "https://www.reddit.com/r/DomainsForSale/",
+            "https://www.reddit.com/r/DomainSales/",
+            "https://www.reddit.com/r/unstoppabledomains/",
+            "https://www.reddit.com/r/web3domains/"
+        ];
+    } else if (category === 'Internal AI Agency') {
+        urls = [
+            "https://www.reddit.com/r/SaaS/",
+            "https://www.reddit.com/r/artificial/",
+            "https://www.reddit.com/r/smallbusiness/",
+            "https://www.reddit.com/r/SideProject/",
+            "https://www.reddit.com/r/Automate/"
+        ];
+    } else if (category === 'Trenew') {
+        urls = [
+            "https://www.reddit.com/r/HomeImprovement/",
+            "https://www.reddit.com/r/Roofing/",
+            "https://www.reddit.com/r/solar/",
+            "https://www.reddit.com/r/hvacadvice/",
+            "https://www.reddit.com/r/bayarea/"
+        ];
+    }
+
+    // Format them exactly how the Apify payload expects
+    return urls.map(url => ({ url }));
+};
+
 // Safe extractor to prevent the .map() crash
 const extractItems = (data, platform) => {
     if (Array.isArray(data)) return data;
