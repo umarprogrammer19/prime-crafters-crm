@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Search, Loader2, ExternalLink, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import AddLeadModal from '@/app/components/AddLeadModal';
+import { ChevronLeft, ChevronRight, ExternalLink, Loader2, Plus, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function InternalLeadsPage() {
     const router = useRouter();
@@ -194,7 +194,7 @@ export default function InternalLeadsPage() {
                                         {/* Post Snippet & Link with stopPropagation */}
                                         <td className="px-6 py-4">
                                             {lead.content ? (
-                                                <div className="text-sm text-gray-900 truncate max-w-[250px]">
+                                                <div className="text-sm text-gray-900 truncate max-w-62.5">
                                                     "{lead.content}"
                                                 </div>
                                             ) : (
